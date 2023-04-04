@@ -12,7 +12,7 @@ Activise is a platform designed to bring together individuals with similar inter
 
 FH Salzburg - Portfolio: [https://portfolio.fh-salzburg.ac.at/projects/2020-activise](https://portfolio.fh-salzburg.ac.at/projects/2020-activise)
 
-Staging environment: [https://activise-staging.multimediatechnology.at/courses](https://activise-staging.multimediatechnology.at/courses)
+Staging environment: [https://activise-staging.multimediatechnology.at/courses](https://activise-staging.multimediatechnology.at/courses)  
 Productive environment: [https://activise.multimediatechnology.at/courses](https://activise.multimediatechnology.at/courses)
 
 Swagger Documentation: [https://activise.multimediatechnology.at/api/docs/](https://activise.multimediatechnology.at/api/docs/)
@@ -44,7 +44,7 @@ Swagger Documentation: [https://activise.multimediatechnology.at/api/docs/](http
 ## Project Contributers
 Concept by Isabella Molterer, Lisa-Maria Eibl, Kevin Haunschmied and Julia Schmolmüller
 
-Frontend Team: Kevin & Julia
+Frontend Team: Kevin & Julia  
 Backend Team: Isabella & Lisa-Maria
 
 DevOps: Kevin
@@ -67,10 +67,10 @@ inally, the University of Applied Sciences Salzburg provided a Git Runner and Ho
 
 <table>
   <tr>
-    <td style="border:none;"><img src='docs/ionic-logo.png' height='100'></td>
-    <td style="border:none;"><img src='docs/react-logo.png' height='100'></td>
-    <td style="border:none;"><img src='docs/redux-logo.png' height='100'></td>
-    <td style="border:none;"><img src='docs/jest-logo.png' height='100'></td>
+    <td style="border:none;"><img src='docs/ionic-logo.png'></td>
+    <td style="border:none;"><img src='docs/react-logo.png'></td>
+    <td style="border:none;"><img src='docs/redux-logo.png'></td>
+    <td style="border:none;"><img src='docs/jest-logo.png'></td>
   </tr>
  </table>
 
@@ -78,13 +78,13 @@ inally, the University of Applied Sciences Salzburg provided a Git Runner and Ho
 
 <table>
   <tr>
-    <td style="border:none;"><img src='docs/nestjs-logo.svg' height='100'></td>
-    <td style="border:none;"><img src='docs/node-logo.png' height='100'></td>
-    <td style="border:none;"><img src='docs/nodemailer-logo.png' height='100'></td>
-    <td style="border:none;"><img src='docs/mysql-logo.png' height='100'></td>
-    <td style="border:none;"><img src='docs/jwt-logo.svg' height='100'></td>
-    <td style="border:none;"><img src='docs/aws-logo.svg' height='100'></td>
-    <td style="border:none;"><img src='docs/jest-logo.png' height='100'></td>
+    <td style="border:none;"><img src='docs/nestjs-logo.svg'></td>
+    <td style="border:none;"><img src='docs/node-logo.png'></td>
+    <td style="border:none;"><img src='docs/nodemailer-logo.png'></td>
+    <td style="border:none;"><img src='docs/mysql-logo.png'></td>
+    <td style="border:none;"><img src='docs/jwt-logo.svg'></td>
+    <td style="border:none;"><img src='docs/aws-logo.png'></td>
+    <td style="border:none;"><img src='docs/jest-logo.png'></td>
   </tr>
  </table>
 
