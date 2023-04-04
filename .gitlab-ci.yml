@@ -1,0 +1,325 @@
+.deployment_preparation: &deployment_preparation
+  - apk add --no-cache bash git openssh-client
+  - mkdir -p ~/.ssh -v
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - ssh-keyscan -H -p $DOKKU_SSH_PORT "$DOKKU_SSH_HOST" >> ~/.ssh/known_hosts
+
+.git_deployment_preparation: &git_deployment_preparation
+  - rm -rf .git
+  - git init
+  - git config --global user.email "activise@gmx.at"
+  - git config --global user.name "Activise Pipeline"
+  - git add .
+  - git commit -m "deploy to dokku"
+
+.frontend_deployment_preparation: &frontend_deployment_preparation
+  - cd frontend
+  - printf "node_modules/\n.env*\n.npm" > .gitignore
+
+.frontend_deployment_cleanup: &frontend_deployment_cleanup
+  - rm ~/.ssh/id_rsa
+  - cd frontend
+  - rm -rf .git
+
+.backend_deployment_preparation: &backend_deployment_preparation
+  - cd backend
+  - printf "node_modules/\n.env*\n.npm" > .gitignore
+
+.backend_deployment_cleanup: &backend_deployment_cleanup
+  - rm ~/.ssh/id_rsa
+  - cd backend
+  - rm -rf .git
+
+variables:
+  FRONTEND_DEPLOY_URL: "${DOKKU_SSH_URL}/${FRONTEND_APP_NAME}"
+  FRONTEND_STAGING_DEPLOY_URL: "${DOKKU_SSH_URL}/${FRONTEND_STAGING_APP_NAME}"
+  BACKEND_DEPLOY_URL: "${DOKKU_SSH_URL}/${BACKEND_APP_NAME}"
+  BACKEND_STAGING_DEPLOY_URL: "${DOKKU_SSH_URL}/${BACKEND_STAGING_APP_NAME}"
+  CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
+
+# cache: &global_cache
+#   key: ${CI_COMMIT_REF_SLUG}
+#   paths: 
+#     - frontend/.npm/
+#     - backend/.npm/
+#     # - frontend/node_modules/
+#     # - backend/node_modules/
+#     - cache/Cypress
+#   policy: pull-push
+
+stages:
+  - dependencies
+  - test
+  - build
+  - e2e
+  - deploy-staging
+  - deploy-production
+
+backend_dependencies:
+  stage: dependencies
+  image: node:latest
+  tags: 
+    - node:latest
+  artifacts:
+    paths:
+      - backend/node_modules
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths: 
+      - backend/.npm/
+  only:
+    - master
+    - development
+  script:
+    - cd backend
+    - npm ci --cache .npm
+
+frontend_dependencies:
+  stage: dependencies
+  image: cypress/base:12
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths: 
+      - frontend/.npm/
+      - cache/Cypress    
+  tags: 
+    - node:latest
+  artifacts:
+    paths:
+      - frontend/node_modules
+      - cache/Cypress
+  only:
+    - master
+    - development
+  script:
+    - cd frontend
+    - npm ci --cache .npm
+
+backend_test:
+  needs: 
+    - job: backend_dependencies
+  stage: test
+  image: node:latest
+  tags:
+    - node:latest
+  # cache:
+  #   <<: *global_cache
+  #   policy: pull
+  cache: {}
+  artifacts:
+    when: always
+    paths:
+      - backend/coverage
+    reports:
+      junit:
+        - backend/junit.xml
+      cobertura:
+        - backend/coverage/cobertura-coverage.xml
+  only:
+    - master
+    - development
+  script:
+    - cd backend
+    - npm run test:ci
+  coverage: /All\sfiles.*?\s+(\d+.\d+)/
+
+frontend_test:
+  needs: 
+    - job: frontend_dependencies
+  stage: test
+  image: node:latest
+  tags:
+    - node:latest
+  # cache:
+  #   <<: *global_cache
+  #   policy: pull
+  cache: {}
+  artifacts:
+    when: always
+    paths:
+      - frontend/coverage
+    reports:
+      junit:
+        - frontend/junit.xml
+      cobertura:
+        - frontend/coverage/cobertura-coverage.xml
+  only:
+    - master
+    - development
+  script:
+    - cd frontend
+    - npm run test:ci
+  coverage: /All\sfiles.*?\s+(\d+.\d+)/
+
+backend_build:
+  needs: 
+    - job: backend_dependencies
+    - job: backend_test
+  stage: build
+  image: node:latest
+  tags:
+    - node:latest
+  # cache:
+  #   <<: *global_cache
+  #   policy: pull
+  cache: {}
+  artifacts:
+    paths:
+      - backend/dist/
+  variables: 
+    CI: "false"
+  only:
+    - master
+    - development
+  script:
+    - cd backend
+    - npm run build
+
+frontend_build:
+  needs: 
+    - job: frontend_dependencies
+    - job: frontend_test
+  stage: build
+  image: node:latest
+  tags:
+    - node:latest
+  # cache:
+  #   <<: *global_cache
+  #   policy: pull
+  cache: {}
+  artifacts:
+    paths: 
+      - frontend/build/
+  variables: 
+    CI: "false"
+  only:
+    - master
+    - development
+  script:
+    - cd frontend
+    - npm run build
+
+cypress_e2e_test:
+  needs: 
+    - job: frontend_dependencies
+    - job: backend_dependencies
+    - job: frontend_build
+    - job: backend_build
+  stage: e2e
+  image: cypress/base:12
+  tags:
+    - node:latest
+  # cache:
+  #   <<: *global_cache
+  #   policy: pull
+  services:
+    - mysql:5
+  variables:
+    MYSQL_DATABASE: "activise"
+    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    DATABASE_URL: "mysql://root@mysql:3306/activise"
+    NODE_ENV: "production"
+    PROXY: "http://localhost:5000"
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - frontend/cypress/videos
+      - frontend/cypress/screenshots
+    reports:
+      junit:
+        - frontend/cypress/results/junit.xml
+  only:
+    - master
+    - development
+  script:
+    - cd backend
+    - npm run typeorm:run
+    - npm run seed
+    - cd ../frontend
+    - npm run cypress:ci
+
+backend_deploy_staging:
+  needs:
+    - job: backend_build
+    - job: cypress_e2e_test
+  stage: deploy-staging
+  image: alpine
+  tags:
+    - alpine
+  cache: {}
+  only:
+    - development
+  before_script:
+    - *deployment_preparation
+    - *backend_deployment_preparation
+    - *git_deployment_preparation
+  script:
+    - git remote add dokku-backend $BACKEND_STAGING_DEPLOY_URL
+    - git push dokku-backend master --force 
+  after_script:
+    - *backend_deployment_cleanup
+
+frontend_deploy_staging:
+  needs:
+    - job: frontend_build
+    - job: cypress_e2e_test
+  stage: deploy-staging
+  image: alpine
+  tags:
+    - alpine
+  cache: {}
+  only:
+    - development
+  before_script:
+    - *deployment_preparation
+    - *frontend_deployment_preparation
+    - *git_deployment_preparation
+  script:
+    - git remote add dokku-frontend $FRONTEND_STAGING_DEPLOY_URL
+    - git push dokku-frontend master --force 
+  after_script:
+    - *frontend_deployment_cleanup
+
+backend_deploy_production:
+  needs:
+    - job: backend_build
+    - job: cypress_e2e_test
+  stage: deploy-production
+  image: alpine
+  tags:
+    - alpine
+  cache: {}
+  only:
+    - master
+  before_script:
+    - *deployment_preparation
+    - *backend_deployment_preparation
+    - *git_deployment_preparation
+  script:
+    - git remote add dokku-backend $BACKEND_DEPLOY_URL
+    - git push dokku-backend master --force 
+  after_script:
+    - *backend_deployment_cleanup
+
+frontend_deploy_production:
+  needs:
+    - job: frontend_build
+    - job: cypress_e2e_test
+  stage: deploy-production
+  image: alpine
+  tags:
+    - alpine
+  cache: {}
+  only:
+    - master
+  before_script:
+    - *deployment_preparation
+    - *frontend_deployment_preparation
+    - *git_deployment_preparation
+  script:
+    - git remote add dokku-frontend $FRONTEND_DEPLOY_URL
+    - git push dokku-frontend master --force 
+  after_script:
+    - *frontend_deployment_cleanup
