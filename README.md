@@ -82,16 +82,16 @@ inally, the University of Applied Sciences Salzburg provided a Git Runner and Ho
 
 <table>
   <tr>
-    <td style="border:none;"><img widht="100px" src='docs/nestjs-logo.svg'></td>
-    <td style="border:none;"><img widht="100px" src='https://user-images.githubusercontent.com/25181517/192107858-fe19f043-c502-4009-8c47-476fc89718ad.png'></td>
-    <td style="border:none;"><img widht="100px" src='https://user-images.githubusercontent.com/25181517/183568594-85e280a7-0d7e-4d1a-9028-c8c2209e073c.png'></td>
-    <td style="border:none;"><img widht="100px" src='docs/nodemailer-logo.png'></td>
+    <td style="border:none;"><img width="100px" src='docs/nestjs-logo.svg'></td>
+    <td style="border:none;"><img width="100px" src='https://user-images.githubusercontent.com/25181517/192107858-fe19f043-c502-4009-8c47-476fc89718ad.png'></td>
+    <td style="border:none;"><img width="100px" src='https://user-images.githubusercontent.com/25181517/183568594-85e280a7-0d7e-4d1a-9028-c8c2209e073c.png'></td>
+    <td style="border:none;"><img width="100px" src='docs/nodemailer-logo.png'></td>
   </tr>
   <tr>
-    <td style="border:none;"><img widht="100px" src='https://user-images.githubusercontent.com/25181517/183896128-ec99105a-ec1a-4d85-b08b-1aa1620b2046.png'></td>
-    <td style="border:none;"><img widht="100px" src='docs/jwt-logo.svg'></td>
-    <td style="border:none;"><img widht="100px" src='https://user-images.githubusercontent.com/25181517/183896132-54262f2e-6d98-41e3-8888-e40ab5a17326.png'></td>
-    <td style="border:none;"><img widht="100px" src='https://user-images.githubusercontent.com/25181517/187955005-f4ca6f1a-e727-497b-b81b-93fb9726268e.png'></td>
+    <td style="border:none;"><img width="100px" src='https://user-images.githubusercontent.com/25181517/183896128-ec99105a-ec1a-4d85-b08b-1aa1620b2046.png'></td>
+    <td style="border:none;"><img width="100px" src='docs/jwt-logo.svg'></td>
+    <td style="border:none;"><img width="100px" src='https://user-images.githubusercontent.com/25181517/183896132-54262f2e-6d98-41e3-8888-e40ab5a17326.png'></td>
+    <td style="border:none;"><img width="100px" src='https://user-images.githubusercontent.com/25181517/187955005-f4ca6f1a-e727-497b-b81b-93fb9726268e.png'></td>
   </tr>
  </table>
 
