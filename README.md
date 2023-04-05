@@ -47,7 +47,7 @@ Concept by Isabella Molterer, Lisa-Maria Eibl, Kevin Haunschmied and Julia Schmo
 Frontend Team: Kevin & Julia  
 Backend Team: Isabella & Lisa-Maria
 
-DevOps: Kevin
+DevOps: Kevin  
 Project Lead: Isabella
 
 
@@ -61,7 +61,7 @@ Data was stored in a MySQL database. In addition Amazon Web Services (AWS) was l
 Secure authentication was provided through JSON Web Tokens (JWT). Additionally, Nodemailer was integrated into the server to facilitate email communication.
 
 For version control, GitLab was used, with a pipeline implemented to streamline testing, building, and deployment. 
-inally, the University of Applied Sciences Salzburg provided a Git Runner and Hosting to support the development of the project.
+Finally, the University of Applied Sciences Salzburg provided a Git Runner and Hosting to support the development of the project.
 
 
 
